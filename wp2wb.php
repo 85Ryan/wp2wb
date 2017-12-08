@@ -20,6 +20,8 @@ $wp2wb_options = array (
     'wp2wb_content'             => 'false',
 );
 
+include_once(dirname(__FILE__) . '/sync.php');
+
 // Register Activation Hook.
 if ( !function_exists('wp2wb_activation') ) :
 register_activation_hook(__FILE__, 'wp2wb_activation');
@@ -101,8 +103,10 @@ function wp2wb_options_update() {
         $wp2wb_content = !empty($_POST['wp2wb_content']) ? $_POST['wp2wb_content'] : 'false';
         update_option('wp2wb_content', $wp2wb_content);
 
-        if ( empty($_POST['wp2wb_app_key']) ) {
+        if ( isset($_POST['wp2wb_app_key']) || isset($_POST['wp2wb_app_secret']) ) {
             update_option('wp2wb_access_token', '');
+            update_option('wp2wb_expires_in', '');
+            update_option('wp2wb_create_at', '');
         }
 
         echo $updated;
@@ -172,11 +176,11 @@ function wp2wb_option_notice() {
 
     if ( !get_option('wp2wb_app_key') || !get_option('wp2wb_app_secret') ) {
     ?>
-        <div class="error"><p><?php printf( __( 'Please enter your sina APP Key and APP Secret, then click the save button! You can go to <strong><a href="%s">Sina Open Platform</a></strong> to apply for them.', 'wp2wb' ), esc_url( $open_sina ) ); ?></p></div>
+        <div class="error"><p><?php printf( __( '<strong style="color:red;">STEP 1:</strong> Please enter your sina <strong>APP Key</strong> and <strong>APP Secret</strong>, then click the save button! You can go to <strong><a href="%s">Sina Open Platform</a></strong> to apply for them.', 'wp2wb' ), esc_url( $open_sina ) ); ?></p></div>
     <?php }
     else if ( !get_option('wp2wb_access_token') ) {
         ?>
-        <div class="error"><p><?php printf( __( 'Nice, next you must to <strong><a href="%s">Authorization</a></strong>.', 'wp2wb' ), esc_url( $oauth_url ) ); ?></p></div>
+        <div class="error"><p><?php printf( __( '<strong style="color:red;">STEP 2:</strong> Nice! Next step you must to <a href="%s">Authorization</a> , click the link to do it.', 'wp2wb' ), esc_url( $oauth_url ) ); ?></p></div>
     <?php }
 }
 endif;
@@ -193,11 +197,11 @@ function wp2wb_option_page() {
             <table class="form-table">
                 <tr valign="top">
                     <th scope="row"><label for="wp2wb_app_key"><?php _e( 'APP Key', 'wp2wb' ); ?></label></th>
-                    <td><input name="wp2wb_app_key" type="text" id="wp2wb_app_key" value="<?php print( get_option( 'wp2wb_app_key' ) ); ?>" size="40" class="regular-text" /><p class="description">test</p></td>
+                    <td><input name="wp2wb_app_key" type="text" id="wp2wb_app_key" value="<?php print( get_option( 'wp2wb_app_key' ) ); ?>" size="40" class="regular-text" /><p class="description"><?php _e( 'Please enter your sina App Key.', 'wp2wb' ); ?></p></td>
                 </tr>
                 <tr valign="top">
                     <th scope="row"><label for="wp2wb_app_secret"><?php _e( 'APP Secret', 'wp2wb' ); ?></label></th>
-                    <td><input name="wp2wb_app_secret" type="text" id="wp2wb_app_secret" value="<?php print( get_option( 'wp2wb_app_secret' ) ); ?>" size="40" class="regular-text" /><p class="description">test</p></td>
+                    <td><input name="wp2wb_app_secret" type="text" id="wp2wb_app_secret" value="<?php print( get_option( 'wp2wb_app_secret' ) ); ?>" size="40" class="regular-text" /><p class="description"><?php _e( 'Please enter your sina App Secret.', 'wp2wb' ); ?></p></td>
                 </tr>
                 <?php if( get_option('wp2wb_access_token') != '' ) : ?>
                 <tr valign="top">
@@ -209,7 +213,7 @@ function wp2wb_option_page() {
             </table>
             <table class="form-table">
                 <tr valign="top">
-                    <th scope="row"><?php _e('Weibo Content', 'wp2wb'); ?></th>
+                    <th scope="row"><?php _e('Sync Enable', 'wp2wb'); ?></th>
                     <td><p><input id="sync_enable" class="wp2wb_sync" type="radio" name="wp2wb_sync" value="enable" <?php checked( 'enable', get_option( 'wp2wb_sync' ) ); ?> /><label for="sync_enable"><?php _e( 'Sync Enable', 'wp2wb' ); ?></label></p>
 					<p><input id="sync_disable" class="wp2wb_sync" type="radio" name="wp2wb_sync" value="disable" <?php checked( 'disable', get_option( 'wp2wb_sync' ) ); ?> /><label for="sync_disable"><?php _e( 'Sync Disable', 'wp2wb' ); ?></label></p>
                     </td>
@@ -218,7 +222,7 @@ function wp2wb_option_page() {
             <table id="wp2wb_enable" class="form-table wp2wb_enable">
                 <tr valign="top">
                     <th scope="row"><?php _e('Weibo Content', 'wp2wb'); ?></th>
-                    <td><label for="wp2wb_content"><input name="wp2wb_content" type="checkbox" id="wp2wb_content" value="true" <?php checked('true', get_option('wp2wb_content')); ?> /><?php _e('Weibo content includes the post excerpt.'); ?></label><p class="description">test</p></td>
+                    <td><label for="wp2wb_content"><input name="wp2wb_content" type="checkbox" id="wp2wb_content" value="true" <?php checked('true', get_option('wp2wb_content')); ?> /><?php _e(' Weibo content includes the post excerpt.'); ?></label><p class="description"><?php _e( 'Select whether the Weibo content includes the post excerpt, if not, only publish the post title.', 'wp2wb' ); ?></p></td>
                 </tr>
             </table>
             <p class="submit"><input type="submit" name="update_options" class="button-primary" value="<?php _e('Save Changes'); ?>" />
