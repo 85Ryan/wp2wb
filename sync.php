@@ -36,7 +36,7 @@ if ( !function_exists('wp2wb_sync_publish') ) {
             $access_token = get_option('wp2wb_access_token');
             $headers = array();
             $headers[] = "Authorization: OAuth2 ".$access_token;
-            $post_title = get_the_title($post_ID);
+            $post_title = wp2wb_replace(get_the_title($post_ID));
             $post_url = get_permalink($post_ID);
             $content = $post -> post_content;
             $excerpt = $post -> post_excerpt;
@@ -125,4 +125,13 @@ if ( !function_exists( 'wp2wb_post_img_src' ) ) {
         }
         return $post_img_src;
     }
+}
+
+if (!function_exists('wp2wb_replace')) {
+	function wp2wb_replace($str) {
+		$a = array('&#160;', '&#038;', '&#8211;', '&#8216;', '&#8217;', '&#8220;', '&#8221;', '&amp;', '&lt;', '&gt', '&ldquo;', '&rdquo;', '&nbsp;', 'Posted by Wordmobi');
+		$b = array(' ', '&', '-', '‘', '’', '“', '”', '&', '<', '>', '“', '”', ' ', '');
+		$str = str_replace($a, $b, strip_tags($str));
+		return trim($str);
+	}
 }
