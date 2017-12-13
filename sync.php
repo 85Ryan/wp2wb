@@ -73,36 +73,47 @@ if ( !function_exists('wp2wb_sync_publish') ) {
                 } else {
                     $data = "status=" . urlencode($status);
                 }
+
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, $apiurl);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+                curl_setopt($ch, CURLOPT_POST, 1);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+                $response = curl_exec($ch);
+                curl_close($ch);
+                $results = json_decode($response);
+                var_dump($results);
             }
 
             if ( get_option('wp2wb_weibo_type') == 'article' ) {
                 $apiurl = 'https://api.weibo.com/proxy/article/publish.json';
-
                 if( !empty($pic_src) ) {
                     $cover = str_replace(home_url(),$_SERVER["DOCUMENT_ROOT"],$pic_src);
                 } else {
                     $cover = plugins_url('cover.jpg',__FILE__);
                 }
-
-                $data = array (
-                    'title'     => $post_title,
-                    'content'   => urlencode($content),
-                    'cover'     => $cover,
-                    'text'      => $post_title,
+                $data = array(
+                    'title' => wp2wb_replace("$post_title"),
+                    'content' => rawurlencode("$content"),
+                    'cover' => "http://ww1.sinaimg.cn/crop.0.0.320.179.1000.562/baaa02f7jw1f455n706p3j208w0e6ta0.jpg",
+                    'text' => wp2wb_replace("$post_title"),
+                    'access_token' => $access_token,
                 );
-            }
 
-            $curl = curl_init();
-            curl_setopt($curl, CURLOPT_URL, $apiurl);
-            curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
-            curl_setopt($curl, CURLOPT_POST, 1);
-            curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-            $response = curl_exec($curl);
-            curl_close($curl);
-            //$results = json_decode($response);
-            //var_dump($results);
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, $apiurl);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, 0);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+                curl_setopt($ch, CURLOPT_POST, 1);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+                $response = curl_exec($ch);
+                curl_close($ch);
+                $results = json_decode($response);
+                var_dump($results);
+            }
         }
     }
 }
