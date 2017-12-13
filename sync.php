@@ -13,6 +13,7 @@ if ( get_option('wp2wb_sync') == 'enable' ) {
     add_action('publish_post', 'wp2wb_sync_publish', 1);
 }
 
+// Add Sync Sidebox.
 if ( !function_exists( 'wp2wb_sync_sidebox' ) ) {
     function wp2wb_sync_sidebox() {
         global $post;
@@ -26,70 +27,102 @@ if ( !function_exists( 'wp2wb_sync_add_sidebox' ) ) {
     }
 }
 
-if ( !function_exists( 'wp2wb_sync_publish' ) ) {
-    function wp2wb_sync_publish($post_ID, $debug = true) {
+// Sync Function.
+if ( !function_exists('wp2wb_sync_publish') ) {
+    function wp2wb_sync_publish($post_ID) {
         global $post;
-        if (!wp_is_post_revision($post_ID) && $post->post_status != "publish" || $debug == true) {
-            if (isset($post) && $post->post_type != "post") return;
-            $access_token = get_option( 'wp2wb_access_token' );
+        if (!wp_is_post_revision($post_ID) && $post->post_status != 'publish'){
+            if (isset($post) && $post->post_type != 'post' || isset($_POST['publish_no_sync'])) return;
+            $access_token = get_option('wp2wb_access_token');
             $headers = array();
             $headers[] = "Authorization: OAuth2 ".$access_token;
-            $url = 'https://api.weibo.com/2/statuses/share.json';
-            $status = "我刚刚发布了新文章《".get_the_title($post_ID)."》，快来看看吧。详细内容请点击：".get_permalink($post_ID);
-            if (has_post_thumbnail()) {
-                $post_thumbnail_id = get_post_thumbnail_id($post_ID);
-                $img_src = wp_get_attachment_url( $post_thumbnail_id );
-            } else {
-                $content = get_post( $post_ID )->post_content;
-                preg_match_all('/<img.*?(?: |\\t|\\r|\\n)?src=[\'"]?(.+?)[\'"]?(?:(?: |\\t|\\r|\\n)+.*?)?>/sim', $content, $strResult, PREG_PATTERN_ORDER);
-                $img_src = $strResult[1][0];
+            $post_title = get_the_title($post_ID);
+            $post_url = get_permalink($post_ID);
+            $content = $post -> post_content;
+            $excerpt = $post -> post_excerpt;
+            $pic_src = wp2wb_post_img_src($post_ID);
+
+            if ( get_option('wp2wb_weibo_type') == 'simple' ) {
+
+                $apiurl = 'https://api.weibo.com/2/statuses/share.json';
+                $status = sprintf( __( 'I just published a new article:  %1$s, click here for details: %2$s.', 'wp2wb' ), $post_title, $post_url );
+
+                if( !empty($pic_src) ) {
+                    $pic_file = str_replace(home_url(),$_SERVER["DOCUMENT_ROOT"],$pic_src);
+                    if( !empty($pic_file) ) {
+                        $file_content = file_get_contents($pic_file);
+                    } else {
+                        $file_content = file_get_contents($pic_src);
+                    }
+                    $array = explode('?', basename($pic_src));
+                    $file_name = $array[0];
+                    $sep = uniqid('------------------');
+                    $mpSep = '--'.$sep;
+                    $endSep = $mpSep. '--';
+                    $multibody = '';
+                    $multibody .= $mpSep . "\r\n";
+                    $multibody .= 'Content-Disposition: form-data; name="pic"; filename="' . $file_name . '"' . "\r\n";
+                    $multibody .= "Content-Type: image/unknown\r\n\r\n";
+                    $multibody .= $file_content. "\r\n";
+                    $multibody .= $mpSep . "\r\n";
+                    $multibody .= 'content-disposition: form-data; name="status' . "\"\r\n\r\n";
+                    $multibody .= urlencode($status)."\r\n";
+                    $multibody .= $endSep;
+                    $headers[] = "Content-Type: multipart/form-data; boundary=" . $sep;
+                    $data = $multibody;
+                } else {
+                    $data = "status=" . urlencode($status);
+                }
             }
 
-            if ( !empty( $img_src ) ) {
-                $picfile = str_replace(home_url(),$_SERVER["DOCUMENT_ROOT"],$img_src);
+            if ( get_option('wp2wb_weibo_type') == 'article' ) {
+                $apiurl = 'https://api.weibo.com/proxy/article/publish.json';
 
-                if ( !empty( $picfile ) ) {
-                    $filecontent = file_get_contents($picfile);
+                if( !empty($pic_src) ) {
+                    $cover = str_replace(home_url(),$_SERVER["DOCUMENT_ROOT"],$pic_src);
                 } else {
-                    $filecontent = file_get_contents($img_src);
+                    $cover = plugins_url('cover.jpg',__FILE__);
                 }
 
-                $array = explode('?', basename($img_src));
-                $filename = $array[0];
-                $boundary = uniqid('------------------');
-                $MPboundary = '--'.$boundary;
-                $endMPboundary = $MPboundary. '--';
-                $multipartbody = '';
-                $multipartbody .= $MPboundary . "\r\n";
-                $multipartbody .= 'Content-Disposition: form-data; name="pic"; filename="' . $filename . '"' . "\r\n";
-                $multipartbody .= "Content-Type: image/unknown\r\n\r\n";
-                $multipartbody .= $filecontent. "\r\n";
-                $multipartbody .= $MPboundary . "\r\n";
-                $multipartbody .= 'content-disposition: form-data; name="status' . "\"\r\n\r\n";
-                $multipartbody .= urlencode($status)."\r\n";
-                $multipartbody .= $endMPboundary;
-                $headers[] = "Content-Type: multipart/form-data; boundary=" . $boundary;
-                $data = $multipartbody;
-            } else {
-                $data = "status=" . urlencode($status);
+                $data = array (
+                    'title'     => $post_title,
+                    'content'   => urlencode($content),
+                    'cover'     => $cover,
+                    'text'      => $post_title,
+                );
             }
 
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-            curl_setopt($ch, CURLOPT_POST, TRUE);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-            $curlResponse = curl_exec($ch);
-            curl_close($ch);
-            $output = json_decode($curlResponse);
+            $curl = curl_init();
+            curl_setopt($curl, CURLOPT_URL, $apiurl);
+            curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+            curl_setopt($curl, CURLOPT_POST, 1);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+            $response = curl_exec($curl);
+            curl_close($curl);
+            //$results = json_decode($response);
+            //var_dump($results);
+        }
+    }
+}
 
-            if ( $debug ) {
-                var_dump($output);
-                echo '<hr />';
-                var_dump($data);
+// Get Post Image Src.
+if ( !function_exists( 'wp2wb_post_img_src' ) ) {
+    function wp2wb_post_img_src($post_ID) {
+        global $post;
+        if ( has_post_thumbnail() ) {
+            $thumbnail_src = wp_get_attachment_image_src(get_post_thumbnail_id($post->ID),'full');
+            $post_img_src = $thumbnail_src [0];
+        } else {
+            $content = get_post( $post_ID )->post_content;
+            $output = preg_match_all('/<img.*?(?: |\\t|\\r|\\n)?src=[\'"]?(.+?)[\'"]?(?:(?: |\\t|\\r|\\n)+.*?)?>/sim', $content, $strResult, PREG_PATTERN_ORDER);
+            if ( $output ) {
+                $post_img_src = $strResult [1][0];
+            } else {
+                $post_img_src = '';
             }
         }
+        return $post_img_src;
     }
 }
