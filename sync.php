@@ -29,16 +29,16 @@ if ( !function_exists( 'wp2wb_sync_add_sidebox' ) ) {
 
 // Sync Function.
 if ( !function_exists('wp2wb_sync_publish') ) {
-    function wp2wb_sync_publish($post_ID) {
+    function wp2wb_sync_publish($post_ID, $debug = true) {
         global $post;
-        if (!wp_is_post_revision($post_ID) && $post->post_status != 'publish'){
+        if (!wp_is_post_revision($post_ID) && $post->post_status != 'publish'  || $debug == true){
             if (isset($post) && $post->post_type != 'post' || isset($_POST['publish_no_sync'])) return;
             $access_token = get_option('wp2wb_access_token');
             $headers = array();
             $headers[] = "Authorization: OAuth2 ".$access_token;
             $post_title = wp2wb_replace(get_the_title($post_ID));
             $post_url = get_permalink($post_ID);
-            $content = $post -> post_content;
+            $post_content = $post -> post_content;
             $excerpt = $post -> post_excerpt;
             $pic_src = wp2wb_post_img_src($post_ID);
 
@@ -73,47 +73,41 @@ if ( !function_exists('wp2wb_sync_publish') ) {
                 } else {
                     $data = "status=" . urlencode($status);
                 }
-
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, $apiurl);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-                curl_setopt($ch, CURLOPT_POST, 1);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-                $response = curl_exec($ch);
-                curl_close($ch);
-                $results = json_decode($response);
-                var_dump($results);
             }
 
             if ( get_option('wp2wb_weibo_type') == 'article' ) {
-                $apiurl = 'https://api.weibo.com/proxy/article/publish.json';
+                $apiurl = "https://api.weibo.com/proxy/article/publish.json";
+                $original_link = sprintf( __( '<p>Click here for details: <a href="%1$s">%2$s</a>.</p>', 'wp2wb' ), $post_url, $post_title );
+                $content = $post_content . $original_link;
                 if( !empty($pic_src) ) {
-                    $cover = str_replace(home_url(),$_SERVER["DOCUMENT_ROOT"],$pic_src);
+                    $cover = $pic_src;
                 } else {
-                    $cover = plugins_url('cover.jpg',__FILE__);
+                    $cover = plugins_url('/assets/default-cover.jpg',__FILE__);
                 }
                 $data = array(
-                    'title' => wp2wb_replace("$post_title"),
-                    'content' => rawurlencode("$content"),
-                    'cover' => "http://ww1.sinaimg.cn/crop.0.0.320.179.1000.562/baaa02f7jw1f455n706p3j208w0e6ta0.jpg",
-                    'text' => wp2wb_replace("$post_title"),
+                    'title' => $post_title,
+                    'content' => rawurlencode(wp2wb_replace_code($content)),
+                    'cover' => $cover,
+                    'text' => $post_title,
                     'access_token' => $access_token,
                 );
-
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, $apiurl);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, 0);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-                curl_setopt($ch, CURLOPT_POST, 1);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-                $response = curl_exec($ch);
-                curl_close($ch);
-                $results = json_decode($response);
-                var_dump($results);
             }
+            
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $apiurl);
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            $response = curl_exec($ch);
+            curl_close($ch);
+            $results = json_decode($response);
+            
+            // debug
+            var_dump($results);
+            echo '<hr />';
+            var_dump($data);
         }
     }
 }
@@ -138,11 +132,24 @@ if ( !function_exists( 'wp2wb_post_img_src' ) ) {
     }
 }
 
+// Replace Escape Character.
 if (!function_exists('wp2wb_replace')) {
 	function wp2wb_replace($str) {
 		$a = array('&#160;', '&#038;', '&#8211;', '&#8216;', '&#8217;', '&#8220;', '&#8221;', '&amp;', '&lt;', '&gt', '&ldquo;', '&rdquo;', '&nbsp;', 'Posted by Wordmobi');
 		$b = array(' ', '&', '-', '‘', '’', '“', '”', '&', '<', '>', '“', '”', ' ', '');
 		$str = str_replace($a, $b, strip_tags($str));
 		return trim($str);
+	}
+}
+
+// Replace <pre>-><blockquote> and <code>-><i> in Sina Article.
+// Because sina toutiao article don't support the pre and code tags.
+if (!function_exists('wp2wb_replace_b')) {
+	function wp2wb_replace_code($str) {
+        $strtemp = trim($str); 
+		$search = array('/<pre>(.+?)<\/pre>/is', '/<code>(.+?)<\/code>/is');
+		$replace = array('<blockquote>\1</blockquote>', '<i>\1</i>');
+		$text = preg_replace($search, $replace, $strtemp);
+		return $text;
 	}
 }

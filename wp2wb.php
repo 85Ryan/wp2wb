@@ -1,10 +1,11 @@
 <?php
 /*
-Plugin Name: wp2wb
+Plugin Name: WordPres 同步微博
 Plugin URI: https://github.com/85Ryan/wp2wb/
-Description: Sync WordPress Post to Sina Weibo.
+Description: 将你的 WordPress 网站与新浪微博关联，在发布文章时自动将文章同步发布到新浪微博，并且可以选择以普通微博方式发布或者头条文章方式发布。使用前需要先在 <a href="http://open.weibo.com">新浪开放平台</a> 创建网站网页应用。
 Author: Ryan
 Version: 1.0
+Text Domain: wp2wb
 Author URI: https://iiiryan.com/
 */
 
@@ -175,7 +176,7 @@ if ( !function_exists( 'wp2wb_option_notice' ) ) {
         <?php }
         else if ( !get_option('wp2wb_access_token') ) {
             ?>
-            <div class="error"><p><?php printf( __( '<strong style="color:red;">STEP 2:</strong> Nice! Next step you must to <a href="%s">Authorization</a> , click the link to do it.', 'wp2wb' ), esc_url( $oauth_url ) ); ?></p></div>
+            <div class="error"><p><?php printf( __( '<strong style="color:red;">STEP 2:</strong> Nice! Next step you must to <a href="%s">Authorization</a> , click the link to do it. Before authorization, You should set the authorization callback page first.', 'wp2wb' ), esc_url( $oauth_url ) ); ?></p></div>
         <?php }
     }
 }
@@ -183,7 +184,6 @@ if ( !function_exists( 'wp2wb_option_notice' ) ) {
 // Define Option Page.
 if ( !function_exists('wp2wb_option_page') ) {
     function wp2wb_option_page() {
-        $open_sina = 'http://open.weibo.com';
     ?>
         <div class="wrap">
             <h1><?php _e('Sync to Weibo Settings', 'wp2wb') ?></h1>
@@ -199,6 +199,13 @@ if ( !function_exists('wp2wb_option_page') ) {
                         <th scope="row"><label for="wp2wb_app_secret"><?php _e( 'APP Secret', 'wp2wb' ); ?></label></th>
                         <td><input name="wp2wb_app_secret" type="text" id="wp2wb_app_secret" value="<?php print( get_option( 'wp2wb_app_secret' ) ); ?>" size="40" class="regular-text" /><p class="description"><?php _e( 'Please enter your sina App Secret.', 'wp2wb' ); ?></p></td>
                     </tr>
+                    <?php if( get_option('wp2wb_app_key') != '' && get_option('wp2wb_app_secret') != '' ) : ?>
+                    <tr valign="top">
+                        <th scope="row"><label for="wp2wb_redirect_uri"><?php _e('Redirect Uri', 'wp2wb'); ?></label></th>
+                        <td><input name="wp2wb_redirect_uri" type="text" id="wp2wb_redirect_uri" value="<?php print(admin_url('options-general.php?page=wp2wb-options')); ?>" size="40" class="regular-text" readonly />
+                        <p class="description"><?php _e( 'Please set the application authorization callback page to the above url.', 'wp2wb' ); ?></p></td>
+                    </tr>
+                    <?php endif; ?>
                     <?php if( get_option('wp2wb_access_token') != '' ) : ?>
                     <tr valign="top">
                         <th scope="row"><label for="wp2wb_access_token"><?php _e('Access Token', 'wp2wb'); ?></label></th>
@@ -220,7 +227,7 @@ if ( !function_exists('wp2wb_option_page') ) {
                         <th scope="row"><?php _e('Weibo Type', 'wp2wb'); ?></th>
                         <td><p><input id="simple_weibo" class="wp2wb_weibo_type" type="radio" name="wp2wb_weibo_type" value="simple" <?php checked( 'simple', get_option( 'wp2wb_weibo_type' ) ); ?> /><label for="simple_weibo"><?php _e( 'Simple Weibo', 'wp2wb' ); ?></label></p>
                         <p><input id="article_weibo" class="wp2wb_weibo_type" type="radio" name="wp2wb_weibo_type" value="article" <?php checked( 'article', get_option( 'wp2wb_weibo_type' ) ); ?> /><label for="article_weibo"><?php _e( 'Toutiao Article', 'wp2wb' ); ?></label></p>
-                        <p class="description"><?php printf( _e( 'Sina toutiao article api need to apply for advanced privileges. You can go to <strong><a href="%s">Sina Open Platform</a></strong> to apply.', 'wp2wb' ), esc_url( $open_sina ) ); ?></p></td>
+                        <p class="description"><?php _e( 'Sina toutiao article api need to apply for advanced privileges. You can go to <strong><a href="http://open.weibo.com">Sina Open Platform</a></strong> to apply.', 'wp2wb' ); ?></p></td>
                     </tr>
                 </table>
                 <p class="submit"><input type="submit" name="update_options" class="button-primary" value="<?php _e('Save Changes'); ?>" />
