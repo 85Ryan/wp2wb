@@ -10,7 +10,7 @@
 
 if ( get_option('wp2wb_sync') == 'enable' ) {
     add_action('admin_menu', 'wp2wb_sync_add_sidebox');
-    add_action('publish_post', 'wp2wb_sync_publish', 1);
+    add_action('publish_post', 'wp2wb_sync_publish');
 }
 
 // Add Sync Sidebox.
@@ -29,9 +29,9 @@ if ( !function_exists( 'wp2wb_sync_add_sidebox' ) ) {
 
 // Sync Function.
 if ( !function_exists('wp2wb_sync_publish') ) {
-    function wp2wb_sync_publish($post_ID, $debug = true) {
+    function wp2wb_sync_publish($post_ID) {
         global $post;
-        if (!wp_is_post_revision($post_ID) && $post->post_status != 'publish'  || $debug == true){
+        if (!wp_is_post_revision($post_ID) && $post->post_status != 'publish'){
             if (isset($post) && $post->post_type != 'post' || isset($_POST['publish_no_sync'])) return;
             $access_token = get_option('wp2wb_access_token');
             $headers = array();
@@ -105,9 +105,9 @@ if ( !function_exists('wp2wb_sync_publish') ) {
             $results = json_decode($response);
             
             // debug
-            var_dump($results);
-            echo '<hr />';
-            var_dump($data);
+            //var_dump($results);
+            //echo '<hr />';
+            //var_dump($data);
         }
     }
 }
