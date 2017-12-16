@@ -78,7 +78,7 @@ if ( !function_exists('wp2wb_sync_publish') ) {
             if ( get_option('wp2wb_weibo_type') == 'article' ) {
                 $apiurl = "https://api.weibo.com/proxy/article/publish.json";
                 $original_link = sprintf( __( '<p>Click here for details: <a href="%1$s">%2$s</a>.</p>', 'wp2wb' ), $post_url, $post_title );
-                $content = $post_content . $original_link;
+                $content = wp2wb_replace_code($post_content) . $original_link;
                 if( !empty($pic_src) ) {
                     $cover = $pic_src;
                 } else {
@@ -86,7 +86,7 @@ if ( !function_exists('wp2wb_sync_publish') ) {
                 }
                 $data = array(
                     'title' => $post_title,
-                    'content' => rawurlencode(wp2wb_replace_code($content)),
+                    'content' => rawurlencode($content),
                     'cover' => $cover,
                     'text' => $post_title,
                     'access_token' => $access_token,
