@@ -39,14 +39,11 @@ if ( !function_exists('wp2wb_sync_publish') ) {
             $post_title = wp2wb_replace(get_the_title($post_ID));
             $post_url = get_permalink($post_ID);
             $post_content = $post -> post_content;
-            $excerpt = $post -> post_excerpt;
             $pic_src = wp2wb_post_img_src($post_ID);
 
             if ( get_option('wp2wb_weibo_type') == 'simple' ) {
-
                 $apiurl = 'https://api.weibo.com/2/statuses/share.json';
                 $status = sprintf( __( 'I just published a new article:  %1$s, click here for details: %2$s.', 'wp2wb' ), $post_title, $post_url );
-
                 if( !empty($pic_src) ) {
                     $pic_file = str_replace(home_url(),$_SERVER["DOCUMENT_ROOT"],$pic_src);
                     if( !empty($pic_file) ) {
