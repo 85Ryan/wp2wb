@@ -33,6 +33,7 @@ if ( !function_exists('wp2wb_sync_publish') ) {
         global $post;
         if (!wp_is_post_revision($post_ID) && $post->post_status != 'publish'){
             if (isset($post) && $post->post_type != 'post' || isset($_POST['publish_no_sync'])) return;
+            $post = get_post($post_ID);
             $access_token = get_option('wp2wb_access_token');
             $headers = array();
             $headers[] = "Authorization: OAuth2 ".$access_token;
