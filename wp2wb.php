@@ -4,7 +4,7 @@ Plugin Name: WordPres 同步微博
 Plugin URI: https://github.com/85Ryan/wp2wb/
 Description: 将你的 WordPress 网站与新浪微博关联，在发布文章时自动将文章同步发布到新浪微博，并且可以选择以普通微博方式发布或者头条文章方式发布。使用前需要先在 <a href="http://open.weibo.com">新浪开放平台</a> 创建网站网页应用。
 Author: Ryan
-Version: 1.0.2
+Version: 1.0.3
 Text Domain: wp2wb
 Author URI: https://iiiryan.com/
 */
@@ -19,6 +19,7 @@ $wp2wb_options = array (
     'wp2wb_create_at'           => '',
     'wp2wb_sync'                => 'disable',
     'wp2wb_weibo_type'          => 'simple',
+    'wp2wb_update_sync'         => 'false',
 );
 
 include_once(dirname(__FILE__) . '/sync.php');
@@ -65,7 +66,7 @@ if ( !function_exists('wp2wb_action_links') ) {
     function wp2wb_action_links ( $links ) {
 
         $setting_links = array (
-            'settings' => '<a href="' . admin_url( 'options-general.php?page=wp2wb-options').'">'.__( 'Settings' ).'</a>'
+            'settings' => '<a href="' . admin_url( 'options-general.php?page=wp2wb-options').'">'.__( 'Settings', 'wp2wb' ).'</a>'
         );
 
         return array_merge( $setting_links, $links);
@@ -76,7 +77,7 @@ if ( !function_exists('wp2wb_action_links') ) {
 if ( !function_exists('wp2wb_options_update') ) {
     function wp2wb_options_update() {
 
-        $updated = '<div class="updated settings-error notice is-dismissible"><p><strong>' . __('Settings saved.') . '</strong></p></div>';
+        $updated = '<div class="updated settings-error notice is-dismissible"><p><strong>' . __('Settings saved.', 'wp2wb') . '</strong></p></div>';
 
         $authorized = '<div class="updated  settings-error notice is-dismissible"><p><strong>' . __('Authorized Success.', 'wp2wb') . '</strong></p></div>';
 
@@ -104,6 +105,9 @@ if ( !function_exists('wp2wb_options_update') ) {
             update_option('wp2wb_access_token', $wp2wb_access_token);
             update_option('wp2wb_sync', $_POST['wp2wb_sync']);
             update_option('wp2wb_weibo_type', $_POST['wp2wb_weibo_type']);
+
+            $update_sync = !empty($_POST['wp2wb_update_sync']) ? $_POST['wp2wb_update_sync'] : false;
+            update_option('wp2wb_update_sync', $update_sync);
 
             echo $updated;
         }
@@ -229,8 +233,12 @@ if ( !function_exists('wp2wb_option_page') ) {
                         <p><input id="article_weibo" class="wp2wb_weibo_type" type="radio" name="wp2wb_weibo_type" value="article" <?php checked( 'article', get_option( 'wp2wb_weibo_type' ) ); ?> /><label for="article_weibo"><?php _e( 'Toutiao Article', 'wp2wb' ); ?></label></p>
                         <p class="description"><?php _e( 'Sina toutiao article api need to apply for advanced privileges. You can go to <strong><a href="http://open.weibo.com">Sina Open Platform</a></strong> to apply.', 'wp2wb' ); ?></p></td>
                     </tr>
+                    <tr valign="top">
+                        <th scope="row"><?php _e('Post Update Sync', 'wp2wb'); ?></th>
+                        <td><label for="wp2wb_update_sync"><input name="wp2wb_update_sync" type="checkbox" id="wp2wb_update_sync" value="true" <?php checked('true', get_option('wp2wb_update_sync')); ?> /><?php _e('Enable Post Update Sync', 'wp2wb'); ?></label><p class="description"><?php _e( 'By default, the post sync is disabled when updated, check this option if you need to sync.', 'wp2wb' ); ?></p></td>
+                    </tr>
                 </table>
-                <p class="submit"><input type="submit" name="update_options" class="button-primary" value="<?php _e('Save Changes'); ?>" />
+                <p class="submit"><input type="submit" name="update_options" class="button-primary" value="<?php _e('Save Changes', 'wp2wb'); ?>" />
                 </p>
             </form>
             <script type="text/javascript">

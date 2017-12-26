@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Ryan\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/wp2wb\n"
-"POT-Creation-Date: 2017-12-15 13:41+0800\n"
-"PO-Revision-Date: 2017-12-15 13:41+0800\n"
+"POT-Creation-Date: 2017-12-26 21:22+0800\n"
+"PO-Revision-Date: 2017-12-26 21:23+0800\n"
 "Last-Translator: \n"
 "Language-Team: 85ryan.blue@gmail.com\n"
 "Language: zh_CN\n"
@@ -24,41 +24,41 @@ msgstr " 不要发布到微博"
 msgid "Sync Setting"
 msgstr "同步微博设置"
 
-#: sync.php:48
+#: sync.php:47
 #, php-format
 msgid "I just published a new article:  %1$s, click here for details: %2$s."
 msgstr "我刚刚发布了新文章：《%1$s》，快来看看吧。详细内容请点击： %2$s"
 
-#: sync.php:80
+#: sync.php:78
 #, php-format
 msgid "<p>Click here for details: <a href=\"%1$s\">%2$s</a>.</p>"
 msgstr "<p>原文链接：<a href=\"%1$s\">%2$s</a></p>"
 
-#: wp2wb.php:53 wp2wb.php:54
+#: wp2wb.php:54 wp2wb.php:55
 msgid "Sync to Weibo"
 msgstr "同步微博设置"
 
-#: wp2wb.php:68
+#: wp2wb.php:69
 msgid "Settings"
-msgstr ""
+msgstr "设置"
 
-#: wp2wb.php:79
+#: wp2wb.php:80
 msgid "Settings saved."
-msgstr ""
+msgstr "设置已保存。"
 
-#: wp2wb.php:81
+#: wp2wb.php:82
 msgid "Authorized Success."
 msgstr "验证成功。"
 
-#: wp2wb.php:157
+#: wp2wb.php:161
 msgid "Authorization will expire at: "
 msgstr "授权过期时间："
 
-#: wp2wb.php:160
+#: wp2wb.php:164
 msgid "Authorization has expired, please re-authorization."
 msgstr "授权已过期，请删除 APP Key 和 APP Secret 重新验证。"
 
-#: wp2wb.php:175
+#: wp2wb.php:179
 #, php-format
 msgid ""
 "<strong style=\"color:red;\">STEP 1:</strong> Please enter your sina "
@@ -71,7 +71,7 @@ msgstr ""
 "到 <strong><a href=\"%s\">新浪开放平台</a></strong> 去申请 APP Key 和 APP "
 "Secret。"
 
-#: wp2wb.php:179
+#: wp2wb.php:183
 #, php-format
 msgid ""
 "<strong style=\"color:red;\">STEP 2:</strong> Nice! Next step you must to <a "
@@ -82,62 +82,62 @@ msgstr ""
 "href=\"#wp2wb_redirect_uri\">应用授权回调页</a>，然后进行 <a href=\"%s\">新浪"
 "授权验证</a> ， 请点击链接验证。"
 
-#: wp2wb.php:189
+#: wp2wb.php:193
 msgid "Sync to Weibo Settings"
 msgstr "同步微博设置"
 
-#: wp2wb.php:195
+#: wp2wb.php:199
 msgid "APP Key"
 msgstr "APP Key"
 
-#: wp2wb.php:196
+#: wp2wb.php:200
 msgid "Please enter your sina App Key."
 msgstr "请输入你的新浪 App Key"
 
-#: wp2wb.php:199
+#: wp2wb.php:203
 msgid "APP Secret"
 msgstr "APP Secret"
 
-#: wp2wb.php:200
+#: wp2wb.php:204
 msgid "Please enter your sina App Secret."
 msgstr "请输入你的新浪 APP Secret"
 
-#: wp2wb.php:204
+#: wp2wb.php:208
 msgid "Redirect Uri"
 msgstr "授权回调页"
 
-#: wp2wb.php:206
+#: wp2wb.php:210
 msgid ""
 "Please set the application authorization callback page to the above url."
 msgstr ""
 "请在 <strong><a href=\"http://open.weibo.com\">新浪开放平台</a></strong> <i>"
 "我的应用->应用信息->高级信息</i> 中将授权回调页和取消授权回调页设置为上述地址"
 
-#: wp2wb.php:211
+#: wp2wb.php:215
 msgid "Access Token"
 msgstr "Access Token"
 
-#: wp2wb.php:219 wp2wb.php:220
+#: wp2wb.php:223 wp2wb.php:224
 msgid "Sync Enable"
 msgstr "开启同步"
 
-#: wp2wb.php:221
+#: wp2wb.php:225
 msgid "Sync Disable"
 msgstr "禁止同步"
 
-#: wp2wb.php:227
+#: wp2wb.php:231
 msgid "Weibo Type"
 msgstr "发布微博类型"
 
-#: wp2wb.php:228
+#: wp2wb.php:232
 msgid "Simple Weibo"
 msgstr "普通微博"
 
-#: wp2wb.php:229
+#: wp2wb.php:233
 msgid "Toutiao Article"
 msgstr "微博头条文章"
 
-#: wp2wb.php:230
+#: wp2wb.php:234
 msgid ""
 "Sina toutiao article api need to apply for advanced privileges. You can go "
 "to <strong><a href=\"http://open.weibo.com\">Sina Open Platform</a></strong> "
@@ -149,9 +149,23 @@ msgstr ""
 "量限制。详细内容请参考<a href=\"http://open.weibo.com/wiki/Toutiao/\">官方文"
 "档</a>。</i>"
 
-#: wp2wb.php:233
+#: wp2wb.php:237
+msgid "Post Update Sync"
+msgstr "文章更新时同步"
+
+#: wp2wb.php:238
+msgid "Enable Post Update Sync"
+msgstr "开启文章更新同步"
+
+#: wp2wb.php:238
+msgid ""
+"By default, the post sync is disabled when updated, check this option if you "
+"need to sync."
+msgstr "默认情况下，文章更新时不会同步，如需同步，请勾选此选项。"
+
+#: wp2wb.php:241
 msgid "Save Changes"
-msgstr ""
+msgstr "保存更改"
 
 #~ msgid "WordPres to Weibo"
 #~ msgstr "WordPress 同步微博"
