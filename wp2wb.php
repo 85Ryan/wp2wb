@@ -4,7 +4,7 @@ Plugin Name: WordPres 同步微博
 Plugin URI: https://github.com/85Ryan/wp2wb/
 Description: 将你的 WordPress 网站与新浪微博关联，在发布文章时自动将文章同步发布到新浪微博，并且可以选择以普通微博方式发布或者头条文章方式发布。使用前需要先在 <a href="http://open.weibo.com">新浪开放平台</a> 创建网站网页应用。
 Author: Ryan
-Version: 1.0.3
+Version: 1.0.4
 Text Domain: wp2wb
 Author URI: https://iiiryan.com/
 */
@@ -106,7 +106,7 @@ if ( !function_exists('wp2wb_options_update') ) {
             update_option('wp2wb_sync', $_POST['wp2wb_sync']);
             update_option('wp2wb_weibo_type', $_POST['wp2wb_weibo_type']);
 
-            $update_sync = !empty($_POST['wp2wb_update_sync']) ? $_POST['wp2wb_update_sync'] : false;
+            $update_sync = !empty($_POST['wp2wb_update_sync']) ? $_POST['wp2wb_update_sync'] : 'false';
             update_option('wp2wb_update_sync', $update_sync);
 
             echo $updated;
