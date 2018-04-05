@@ -238,6 +238,14 @@ if ( !function_exists('wp2wb_option_page') ) {
                         <td><label for="wp2wb_update_sync"><input name="wp2wb_update_sync" type="checkbox" id="wp2wb_update_sync" value="true" <?php checked('true', get_option('wp2wb_update_sync')); ?> /><?php _e('Enable Post Update Sync', 'wp2wb'); ?></label><p class="description"><?php _e( 'By default, the post sync is disabled when updated, check this option if you need to sync.', 'wp2wb' ); ?></p></td>
                     </tr>
                 </table>
+                <table class="form-table">
+                    <tr valign="top">
+                        <th scope="row"><?php _e('Donate Me', 'wp2wb'); ?></th>
+                        <td><p><img src="https://img.iiiryan.com/donate/donate-pay.png" alt="Donate Me" height="150px"><a href="https://www.paypal.me/iiiryan"><img src="https://img.iiiryan.com/donate/donate-paypal.png" alt="Donate Me" height="80px"></a></p>
+                        <p class="description"><?php _e( 'If you like this plugin, Simply scan the QR-Code below to donate me through AliPay or WechatPay, also you can also donate me by clicking the button below through PayPal.', 'wp2wb' ); ?></p>
+                        </td>
+                    </tr>
+                </table>
                 <p class="submit"><input type="submit" name="update_options" class="button-primary" value="<?php _e('Save Changes', 'wp2wb'); ?>" />
                 </p>
             </form>

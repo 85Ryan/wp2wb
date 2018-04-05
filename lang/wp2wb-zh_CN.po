@@ -2,34 +2,34 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Ryan\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/wp2wb\n"
-"POT-Creation-Date: 2017-12-26 21:22+0800\n"
-"PO-Revision-Date: 2017-12-26 21:23+0800\n"
+"POT-Creation-Date: 2018-04-05 12:36+0800\n"
+"PO-Revision-Date: 2018-04-05 12:37+0800\n"
 "Last-Translator: \n"
 "Language-Team: 85ryan.blue@gmail.com\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.0.5\n"
+"X-Generator: Poedit 2.0.6\n"
 "X-Poedit-Basepath: ..\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Poedit-KeywordsList: __;_e\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: sync.php:20
+#: sync.php:24
 msgid " Don&#039;t Sync Post"
 msgstr " 不要发布到微博"
 
-#: sync.php:26
+#: sync.php:30
 msgid "Sync Setting"
 msgstr "同步微博设置"
 
-#: sync.php:47
+#: sync.php:50 sync.php:131
 #, php-format
 msgid "I just published a new article:  %1$s, click here for details: %2$s."
 msgstr "我刚刚发布了新文章：《%1$s》，快来看看吧。详细内容请点击： %2$s"
 
-#: sync.php:78
+#: sync.php:81 sync.php:162
 #, php-format
 msgid "<p>Click here for details: <a href=\"%1$s\">%2$s</a>.</p>"
 msgstr "<p>原文链接：<a href=\"%1$s\">%2$s</a></p>"
@@ -163,7 +163,20 @@ msgid ""
 "need to sync."
 msgstr "默认情况下，文章更新时不会同步，如需同步，请勾选此选项。"
 
-#: wp2wb.php:241
+#: wp2wb.php:243
+msgid "Donate Me"
+msgstr "请我喝杯咖啡"
+
+#: wp2wb.php:245
+msgid ""
+"If you like this plugin, Simply scan the QR-Code below to donate me through "
+"AliPay or WechatPay, also you can also donate me by clicking the button "
+"below through PayPal."
+msgstr ""
+"如果您喜欢这个插件，可以扫描右侧的二维码通过支付宝或微信捐赠我，也可能点出 "
+"PayPal 图标链接通过 PayPal 向我捐赠！谢谢！"
+
+#: wp2wb.php:249
 msgid "Save Changes"
 msgstr "保存更改"
 
