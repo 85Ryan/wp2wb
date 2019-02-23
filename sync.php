@@ -47,7 +47,7 @@ if ( !function_exists('wp2wb_update_sync_publish') ) {
 
         if ( get_option('wp2wb_weibo_type') == 'simple' ) {
             $apiurl = 'https://api.weibo.com/2/statuses/share.json';
-            $status = sprintf( __( 'I just published a new article:  %1$s, click here for details: %2$s.', 'wp2wb' ), $post_title, $post_url );
+            $status = sprintf( __( 'Post Updated:  %1$s, click here for details: %2$s.', 'wp2wb' ), $post_title, $post_url );
             if( !empty($pic_src) ) {
                 $pic_file = str_replace(home_url(),$_SERVER["DOCUMENT_ROOT"],$pic_src);
                 if( !empty($pic_file) ) {
@@ -102,7 +102,7 @@ if ( !function_exists('wp2wb_update_sync_publish') ) {
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         $response = curl_exec($ch);
         curl_close($ch);
-
+        
         // debug
         //$results = json_decode($response);
         //var_dump($results);
@@ -174,7 +174,7 @@ if ( !function_exists('wp2wb_sync_publish') ) {
                     'access_token' => $access_token,
                 );
             }
-
+            
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $apiurl);
             curl_setopt($ch, CURLOPT_POST, 1);
@@ -185,7 +185,7 @@ if ( !function_exists('wp2wb_sync_publish') ) {
             $response = curl_exec($ch);
             curl_close($ch);
             $results = json_decode($response);
-
+            
             // debug
             //var_dump($results);
             //echo '<hr />';
